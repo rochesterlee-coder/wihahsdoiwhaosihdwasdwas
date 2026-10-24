@@ -1,0 +1,27 @@
+name: Build InstaOrg
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Publish Windows app
+        run: dotnet publish InstaOrg.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
+
+      - name: Upload InstaOrg app
+        uses: actions/upload-artifact@v4
+        with:
+          name: InstaOrg-Windows-x64
+          path: publish/
